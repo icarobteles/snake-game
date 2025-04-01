@@ -12,7 +12,7 @@ class Snake:
         self.grow = False
 
     @property
-    def length(self):
+    def length(self) -> int:
         return len(self.body)
 
     def move(self):
@@ -26,9 +26,13 @@ class Snake:
             new_head = (head_x - self.screen.block_size, head_y)
         elif self.direction == pygame.K_RIGHT:
             new_head = (head_x + self.screen.block_size, head_y)
+        else:
+            new_head = (head_x, head_y)
 
+        # Atualiza o corpo da cobra: a nova cabeça é adicionada e a cauda é removida
         self.body = [new_head] + self.body[:-1]
 
+        # Se a cobra deve crescer, adiciona um segmento extra
         if self.grow:
             self.body.append(self.body[-1])
             self.grow = False
@@ -41,40 +45,33 @@ class Snake:
             pygame.K_RIGHT: pygame.K_LEFT,
         }
 
-        valid_directions = opposite_directions.keys()
-        if new_direction not in valid_directions:
-            return
-
-        if new_direction != opposite_directions[self.direction]:
+        if new_direction in opposite_directions and new_direction != opposite_directions[self.direction]:
             self.direction = new_direction
 
     def draw(self):
         head_color = (0, 200, 0)
         body_color = (0, 255, 0)
-        for i, segment in enumerate(self.body):
-            color = head_color if i == 0 else body_color
-            pygame.draw.rect(
-                self.screen.surface,
-                color,
-                (*segment, self.screen.block_size, self.screen.block_size),
-            )
+        for index, segment in enumerate(self.body):
+            color = head_color if index == 0 else body_color
+            rect = (*segment, self.screen.block_size, self.screen.block_size)
+            pygame.draw.rect(self.screen.surface, color, rect)
 
+    # Sinaliza que a cobra deve crescer na próxima atualização.
     def grow_snake(self):
         self.grow = True
 
+    # Incrementa a velocidade da cobra.
     def increase_speed(self):
         self.speed += 1
 
+    # Verifica se a cobra colidiu com as bordas ou com ela mesma.
     def check_collision(self):
         head_x, head_y = self.body[0]
+        
         # Verificar colisão com as bordas
-        if (
-            head_x < 0
-            or head_x >= self.screen.width
-            or head_y < 0
-            or head_y >= self.screen.height
-        ):
+        if head_x < 0 or head_x >= self.screen.width or head_y < 0 or head_y >= self.screen.height:
             return True
+        
         # Verificar colisão com o próprio corpo
         if (head_x, head_y) in self.body[1:]:
             return True

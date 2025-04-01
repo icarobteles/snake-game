@@ -17,6 +17,7 @@ class Screen:
     def update(self):
         pygame.display.flip()
 
+    # Desenha linhas da grade para auxiliar na visualização dos blocos
     def draw_grid(self):
         for x in range(0, self.width, self.block_size):
             pygame.draw.line(self.surface, (40, 40, 40), (x, 0), (x, self.height))
